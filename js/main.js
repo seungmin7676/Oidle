@@ -269,6 +269,56 @@ function handleKeydown(e) {
 /* ============================================================
    이벤트 바인딩
    ============================================================ */
+
+/* ============================================================
+   프리셋 초기화 & 이벤트
+   ============================================================ */
+function initPresets() {
+  const select = document.getElementById('select-preset');
+  if (!select || typeof PRESETS === 'undefined') return;
+
+  PRESETS.forEach(preset => {
+    const opt = document.createElement('option');
+    opt.value       = preset.id;
+    opt.textContent = preset.name;
+    opt.title       = preset.desc;
+    select.appendChild(opt);
+  });
+}
+
+function handleLoadPreset() {
+  const select = document.getElementById('select-preset');
+  if (!select) return;
+
+  const presetId = select.value;
+  if (!presetId) return;
+
+  const preset = PRESETS.find(p => p.id === presetId);
+  if (!preset) return;
+
+  // 기존 데이터 초기화
+  processManager.clearAll();
+
+  // 프리셋 데이터 로드
+  preset.processes.forEach(p => {
+    processManager.addProcess({
+      id:          p.id,
+      arrivalTime: p.arrivalTime,
+      burstTime:   p.burstTime,
+      priority:    p.priority,
+    });
+  });
+
+  renderProcessTable();
+  Visualizer.destroy();
+  Dashboard.reset();
+  Dashboard.rebuildProcessStates(processManager.getAllProcesses());
+  Dashboard.updateCurrentTime(0);
+  Dashboard.updateCpuGauge(0);
+
+  console.log('[Main] Preset loaded:', preset.name, preset.processes.length, 'processes');
+}
+
 function bindEvents() {
   DOM.btnAddProcess.addEventListener('click', handleAddProcess);
   DOM.btnClearAll.addEventListener('click', handleClearAll);
@@ -278,12 +328,16 @@ function bindEvents() {
   DOM.btnPause.addEventListener('click', handlePause);
   DOM.btnReset.addEventListener('click', handleReset);
   document.addEventListener('keydown', handleKeydown);
+
+  const presetBtn = document.getElementById('btn-load-preset');
+  if (presetBtn) presetBtn.addEventListener('click', handleLoadPreset);
 }
 
 /* ============================================================
    초기화
    ============================================================ */
 function init() {
+  initPresets();
   handleAlgorithmChange();
   handleSpeedChange();
   renderProcessTable();
