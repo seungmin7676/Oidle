@@ -1,4 +1,6 @@
-# Oidle ? Process Scheduling Visualizer
+# Oidle : Process Scheduling Visualizer
+
+*Oidle : 유휴 시간(Idle Time)을 없애자!(O-idle)*
 
 > **유한한 CPU 연산 시간을 효율적으로 재활용하는 프로세스 스케줄링 과정의 시각화**
 
@@ -12,7 +14,7 @@
 ## 프로젝트 소개
 
 운영체제(OS)에서 프로세스가 생성되고 소멸되는 과정은 **'시간'과 '메모리'라는 자원을 소비하는 과정**이다.  
-이미 흘러가 버리면 사라지는 **유휴 시간(Idle Time)**을 스케줄링 알고리즘을 통해 유의미한 연산 시간으로 전환시키는 과정 자체가 디지털 자원의 선순환이자 재활용이다.
+이미 흘러가 버리면 사라지는 **유휴 시간(Idle Time)** 을 스케줄링 알고리즘을 통해 유의미한 연산 시간으로 전환시키는 과정 자체가 디지털 자원의 선순환이자 재활용이다.
 
 **Oidle**은 이 과정을 웹 기반으로 시각화하여, 유휴 시간 없이 최적의 처리 성능을 구현하는 **디지털 자원 재생산**을 목표로 한다.
 
@@ -30,7 +32,7 @@
 
 | 세트 이름 | 핵심 특징 |
 |-----------|-----------|
-| **FCFS TEST** | Convoy Effect ? 긴 작업 선점 시 짧은 작업 대기 급증 |
+| **FCFS TEST** | Convoy Effect: 긴 작업 선점 시 짧은 작업 대기 급증 |
 | **SJF TEST** | 짧은 작업 우선 → 평균 대기시간 최소화 |
 | **SRTF TEST** | 실행 중 더 짧은 작업 도착 시 선점 → 응답시간 단축 |
 | **ROUND ROBIN TEST** | 모든 프로세스에 공정한 CPU 시간 배분 |
@@ -153,10 +155,10 @@ index.html
 ```
 
 **설계 원칙:**
-- `scheduler.js` ? DOM 접근 **완전 금지**, 순수 함수로만 구성
-- `processManager` ? 원본 데이터 보호 (`getClonedProcesses()` 제공)
-- `Visualizer` / `Dashboard` ? IIFE 모듈 패턴으로 네임스페이스 보호
-- `main.js` ? 전역 변수 최소화, 이벤트 위임 패턴 활용
+- `scheduler.js` : DOM 접근 **완전 금지**, 순수 함수로만 구성
+- `processManager` : 원본 데이터 보호 (`getClonedProcesses()` 제공)
+- `Visualizer` / `Dashboard` : IIFE 모듈 패턴으로 네임스페이스 보호
+- `main.js` : 전역 변수 최소화, 이벤트 위임 패턴 활용
 
 ---
 
@@ -166,4 +168,4 @@ index.html
 
 ---
 
-*Oidle ? 유휴 시간(Idle Time)을 없애는 것(O-idle)에서 착안한 이름*
+
