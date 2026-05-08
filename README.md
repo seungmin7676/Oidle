@@ -1,4 +1,6 @@
-# Oidle ? Process Scheduling Visualizer
+# Oidle : Process Scheduling Visualizer
+
+*Oidle : 유휴 시간(Idle Time)을 없애자!(O-idle)*
 
 > **유한한 CPU 연산 시간을 효율적으로 재활용하는 프로세스 스케줄링 과정의 시각화**
 
@@ -153,10 +155,10 @@ index.html
 ```
 
 **설계 원칙:**
-- `scheduler.js` ? DOM 접근 **완전 금지**, 순수 함수로만 구성
-- `processManager` ? 원본 데이터 보호 (`getClonedProcesses()` 제공)
-- `Visualizer` / `Dashboard` ? IIFE 모듈 패턴으로 네임스페이스 보호
-- `main.js` ? 전역 변수 최소화, 이벤트 위임 패턴 활용
+- `scheduler.js` : DOM 접근 **완전 금지**, 순수 함수로만 구성
+- `processManager` : 원본 데이터 보호 (`getClonedProcesses()` 제공)
+- `Visualizer` / `Dashboard` : IIFE 모듈 패턴으로 네임스페이스 보호
+- `main.js` : 전역 변수 최소화, 이벤트 위임 패턴 활용
 
 ---
 
@@ -166,4 +168,4 @@ index.html
 
 ---
 
-*Oidle ? 유휴 시간(Idle Time)을 없애는 것(O-idle)에서 착안한 이름*
+
