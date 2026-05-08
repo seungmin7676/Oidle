@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Oidle ? 프로세스 스케줄링 시각화</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- =========================================================
+       HEADER
+  ========================================================= -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">?</span>
+        <div class="logo-text">
+          <h1>Oidle</h1>
+          <p>Process Scheduling Visualizer</p>
+        </div>
+      </div>
+      <div class="header-badge">
+        <span class="badge badge--idle" id="cpu-status-badge">CPU IDLE</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       MAIN CONTENT
+  ========================================================= -->
+  <main class="app-main">
+
+    <!-- ── ROW 1 : 프로세스 입력 + 프로세스 테이블 ─────────── -->
+    <section class="row row--top">
+
+      <!-- 1. 프로세스 입력 패널 -->
+      <div class="card panel--input" id="process-input-panel">
+        <div class="card-header">
+          <span class="card-icon">?</span>
+          <h2 class="card-title">프로세스 추가</h2>
+        </div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="input-name">프로세스 이름</label>
+            <input type="text" id="input-name" placeholder="예: P1" maxlength="10" />
+          </div>
+          <div class="form-group">
+            <label for="input-arrival">도착 시간 (Arrival Time)</label>
+            <input type="number" id="input-arrival" placeholder="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="input-burst">실행 시간 (Burst Time)</label>
+            <input type="number" id="input-burst" placeholder="1" min="1" />
+          </div>
+          <div class="form-group">
+            <label for="input-priority">우선순위 (Priority)</label>
+            <input type="number" id="input-priority" placeholder="1 (낮을수록 높음)" min="1" />
+          </div>
+          <div class="form-actions">
+            <button class="btn btn--primary btn--full" id="btn-add-process">
+              <span>프로세스 추가</span>
+            </button>
+            <button class="btn btn--ghost btn--full" id="btn-clear-all">
+              전체 초기화
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. 프로세스 목록 테이블 -->
+      <div class="card panel--table" id="process-table-panel">
+        <div class="card-header">
+          <span class="card-icon">?</span>
+          <h2 class="card-title">프로세스 목록</h2>
+          <span class="process-count" id="process-count">0개</span>
+        </div>
+        <div class="card-body table-wrapper">
+          <table class="process-table" id="process-table">
+            <thead>
+              <tr>
+                <th>이름</th>
+                <th>도착 시간</th>
+                <th>실행 시간</th>
+                <th>우선순위</th>
+                <th>삭제</th>
+              </tr>
+            </thead>
+            <tbody id="process-tbody">
+              <!-- 더미 데이터 -->
+              <tr data-pid="0" class="process-row">
+                <td><span class="process-badge" style="--clr:#7c3aed">P1</span></td>
+                <td>0</td>
+                <td>5</td>
+                <td>2</td>
+                <td>
+                  <button class="btn btn--delete" aria-label="삭제">?</button>
+                </td>
+              </tr>
+              <tr data-pid="1" class="process-row">
+                <td><span class="process-badge" style="--clr:#2563eb">P2</span></td>
+                <td>1</td>
+                <td>3</td>
+                <td>1</td>
+                <td>
+                  <button class="btn btn--delete" aria-label="삭제">?</button>
+                </td>
+              </tr>
+              <tr data-pid="2" class="process-row">
+                <td><span class="process-badge" style="--clr:#0891b2">P3</span></td>
+                <td>2</td>
+                <td>8</td>
+                <td>3</td>
+                <td>
+                  <button class="btn btn--delete" aria-label="삭제">?</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ── ROW 2 : 알고리즘 선택 + 실행 컨트롤 ────────────── -->
+    <section class="row row--control">
+      <div class="card panel--control" id="control-panel">
+        <div class="card-header">
+          <span class="card-icon">?</span>
+          <h2 class="card-title">스케줄링 설정</h2>
+        </div>
+        <div class="card-body control-body">
+
+          <!-- 알고리즘 선택 -->
+          <div class="control-group">
+            <label for="select-algorithm">알고리즘</label>
+            <select id="select-algorithm" class="select-box">
+              <option value="fcfs">FCFS (선입선출)</option>
+              <option value="sjf">SJF (비선점 최단 작업)</option>
+              <option value="srtf">SRTF (선점 최단 작업)</option>
+              <option value="rr">Round Robin</option>
+              <option value="priority_np">Priority (비선점)</option>
+              <option value="priority_p">Priority (선점)</option>
+            </select>
+          </div>
+
+          <!-- 타임 퀀텀 (RR 전용) -->
+          <div class="control-group" id="quantum-group">
+            <label for="input-quantum">타임 퀀텀 (RR 전용)</label>
+            <input type="number" id="input-quantum" value="2" min="1" class="quantum-input" />
+          </div>
+
+          <!-- 시뮬레이션 속도 -->
+          <div class="control-group">
+            <label for="input-speed">시뮬레이션 속도</label>
+            <div class="speed-row">
+              <input type="range" id="input-speed" min="1" max="5" value="3" class="range-slider" />
+              <span class="speed-label" id="speed-label">x3</span>
+            </div>
+          </div>
+
+          <!-- 실행/정지/초기화 버튼 -->
+          <div class="control-actions">
+            <button class="btn btn--run" id="btn-run">
+              <span class="btn-icon">▶</span> 실행
+            </button>
+            <button class="btn btn--pause" id="btn-pause" disabled>
+              <span class="btn-icon">?</span> 일시정지
+            </button>
+            <button class="btn btn--reset" id="btn-reset">
+              <span class="btn-icon">?</span> 초기화
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ROW 3 : 간트 차트 ────────────────────────────────── -->
+    <section class="row row--gantt">
+      <div class="card panel--gantt" id="gantt-panel">
+        <div class="card-header">
+          <span class="card-icon">?</span>
+          <h2 class="card-title">간트 차트 (Gantt Chart)</h2>
+          <span class="current-time-display">
+            현재 시각: <span id="current-time">0</span>
+          </span>
+        </div>
+        <div class="card-body">
+
+          <!-- 프로세스 상태 배지 -->
+          <div class="process-states" id="process-states">
+            <div class="state-item">
+              <span class="process-badge" style="--clr:#7c3aed">P1</span>
+              <span class="state-badge state--ready">READY</span>
+            </div>
+            <div class="state-item">
+              <span class="process-badge" style="--clr:#2563eb">P2</span>
+              <span class="state-badge state--ready">READY</span>
+            </div>
+            <div class="state-item">
+              <span class="process-badge" style="--clr:#0891b2">P3</span>
+              <span class="state-badge state--ready">READY</span>
+            </div>
+          </div>
+
+          <!-- 간트 차트 캔버스 영역 -->
+          <div class="gantt-chart-wrapper" id="gantt-chart-wrapper">
+            <canvas id="gantt-canvas"></canvas>
+          </div>
+
+          <!-- CPU 이용률 게이지 -->
+          <div class="cpu-gauge-row">
+            <span class="gauge-label">CPU 이용률</span>
+            <div class="gauge-bar-bg">
+              <div class="gauge-bar-fill" id="cpu-gauge-fill" style="width: 0%"></div>
+            </div>
+            <span class="gauge-value" id="cpu-gauge-value">0%</span>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── ROW 4 : 성능 분석 대시보드 ──────────────────────── -->
+    <section class="row row--dashboard">
+      <div class="card panel--dashboard" id="dashboard-panel">
+        <div class="card-header">
+          <span class="card-icon">?</span>
+          <h2 class="card-title">성능 분석 대시보드</h2>
+          <span class="dashboard-status" id="dashboard-status">시뮬레이션 대기 중...</span>
+        </div>
+        <div class="card-body dashboard-body" id="dashboard-body">
+
+          <!-- 핵심 지표 카드 -->
+          <div class="metrics-grid" id="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">평균 대기 시간</span>
+                <span class="metric-value" id="metric-avg-wait">?</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">평균 반환 시간</span>
+                <span class="metric-value" id="metric-avg-turnaround">?</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">평균 응답 시간</span>
+                <span class="metric-value" id="metric-avg-response">?</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">총 실행 시간</span>
+                <span class="metric-value" id="metric-total-time">?</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">CPU 이용률</span>
+                <span class="metric-value" id="metric-cpu-util">?</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon">?</div>
+              <div class="metric-info">
+                <span class="metric-label">처리량 (Throughput)</span>
+                <span class="metric-value" id="metric-throughput">?</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 개별 프로세스 결과 테이블 -->
+          <div class="result-table-wrapper" id="result-table-wrapper">
+            <h3 class="result-table-title">프로세스별 상세 결과</h3>
+            <table class="result-table" id="result-table">
+              <thead>
+                <tr>
+                  <th>프로세스</th>
+                  <th>도착 시간</th>
+                  <th>실행 시간</th>
+                  <th>완료 시간</th>
+                  <th>반환 시간</th>
+                  <th>대기 시간</th>
+                  <th>응답 시간</th>
+                </tr>
+              </thead>
+              <tbody id="result-tbody">
+                <tr>
+                  <td colspan="7" class="empty-row">시뮬레이션을 실행하면 결과가 표시됩니다.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================
+       FOOTER
+  ========================================================= -->
+  <footer class="app-footer">
+    <p>Oidle ? Process Scheduling Visualizer &nbsp;|&nbsp; Web Programming Project</p>
+  </footer>
+
+  <!-- JS -->
+  <script src="js/main.js"></script>
+</body>
+</html>
