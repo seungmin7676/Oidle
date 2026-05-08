@@ -1,0 +1,209 @@
+/* ============================================================
+   dashboard.css ? 성능 분석 대시보드 스타일 (밝은 테마)
+   Oidle : Process Scheduling Visualizer
+   ============================================================ */
+
+/* ── 1. 대시보드 상태 텍스트 ─────────────────────────────────── */
+.dashboard-status {
+  margin-left: auto;
+  font-size: 0.78rem;
+  color: #94a3b8;
+  font-style: italic;
+}
+
+/* ── 2. 대시보드 바디 레이아웃 ──────────────────────────────── */
+.dashboard-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+/* ── 3. 핵심 지표 6-카드 그리드 ────────────────────────────── */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+/* 개별 지표 카드 */
+.metric-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  background: #fafafe;
+  border: 1.5px solid rgba(99, 102, 241, 0.12);
+  border-radius: var(--radius-md);
+  transition: transform var(--transition-normal),
+              background var(--transition-normal),
+              box-shadow var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+/* 카드 좌측 색상 포인트 바 */
+.metric-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #6366f1, #8b5cf6, #06b6d4);
+  border-radius: 3px 0 0 3px;
+  opacity: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.metric-card:hover {
+  transform: translateY(-3px);
+  background: #f5f3ff;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.12);
+}
+
+.metric-card:hover::before {
+  opacity: 1;
+}
+
+/* 지표 아이콘 */
+.metric-icon {
+  font-size: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  background: #eef2ff;
+  border-radius: var(--radius-md);
+  border: 1.5px solid #c7d2fe;
+}
+
+/* 지표 정보 */
+.metric-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.metric-label {
+  font-size: 0.71rem;
+  color: #6366f1;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.metric-value {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e1b4b;
+  letter-spacing: -0.02em;
+  transition: color var(--transition-normal);
+  font-family: 'Inter', sans-serif;
+}
+
+/* 값이 채워진 상태 강조 */
+.metric-value.has-value {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── 4. 프로세스별 결과 테이블 ──────────────────────────────── */
+.result-table-wrapper {
+  overflow-x: auto;
+}
+
+.result-table-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #6366f1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-md);
+  padding-left: var(--space-sm);
+  border-left: 3px solid #6366f1;
+}
+
+.result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  min-width: 600px;
+}
+
+.result-table thead tr {
+  background: #eef2ff;
+}
+
+.result-table th {
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+  font-size: 0.71rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6366f1;
+  border-bottom: 2px solid #c7d2fe;
+  white-space: nowrap;
+}
+
+.result-table td {
+  padding: var(--space-sm) var(--space-md);
+  text-align: center;
+  color: #1e1b4b;
+  border-bottom: 1px solid #f0f0ff;
+  transition: background var(--transition-fast);
+}
+
+.result-table tbody tr:hover td {
+  background: #f5f3ff;
+}
+
+/* 짝수 행 배경 */
+.result-table tbody tr:nth-child(even) td {
+  background: #fafafe;
+}
+
+.result-table tbody tr:nth-child(even):hover td {
+  background: #f5f3ff;
+}
+
+/* 빈 상태 행 */
+.empty-row {
+  color: #a5b4fc !important;
+  font-style: italic;
+  padding: var(--space-xl) !important;
+  font-size: 0.85rem !important;
+}
+
+/* ── 5. 대시보드 완료 상태 애니메이션 ─────────────────────── */
+.dashboard-complete .metric-card {
+  animation: fade-in-up 0.4s ease forwards;
+}
+
+.dashboard-complete .metric-card:nth-child(1) { animation-delay: 0.00s; }
+.dashboard-complete .metric-card:nth-child(2) { animation-delay: 0.08s; }
+.dashboard-complete .metric-card:nth-child(3) { animation-delay: 0.16s; }
+.dashboard-complete .metric-card:nth-child(4) { animation-delay: 0.24s; }
+.dashboard-complete .metric-card:nth-child(5) { animation-delay: 0.32s; }
+.dashboard-complete .metric-card:nth-child(6) { animation-delay: 0.40s; }
+
+/* ── 6. 결과 테이블 수치 색상 강조 ─────────────────────────── */
+.result-table .col-finish { color: #8b5cf6; font-weight: 700; }
+.result-table .col-turn   { color: #059669; font-weight: 700; }
+.result-table .col-wait   { color: #d97706; font-weight: 700; }
+.result-table .col-resp   { color: #6366f1; font-weight: 700; }
+
+/* ── 7. 완료 패널 하이라이트 ───────────────────────────────── */
+.panel--dashboard.complete {
+  border-color: rgba(99, 102, 241, 0.3);
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.1),
+              0 4px 24px rgba(99, 102, 241, 0.1);
+}

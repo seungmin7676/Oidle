@@ -1,0 +1,256 @@
+/* ============================================================
+   animations.css ? 애니메이션 & 키프레임 정의
+   Oidle : Process Scheduling Visualizer
+   ============================================================ */
+
+/* ── 1. 키프레임 정의 ────────────────────────────────────────── */
+
+/* 로고 아이콘 천천히 회전 */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* 글로우 펄스 (RUNNING 상태 배지 등) */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.0);
+    opacity: 1;
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(34, 197, 94, 0.15);
+    opacity: 0.85;
+  }
+}
+
+/* 아래에서 위로 페이드인 */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 위에서 아래로 페이드인 */
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 왼쪽에서 오른쪽으로 슬라이드 (간트 막대 등장) */
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+/* 숫자 카운트업 효과 (시각적 강조) */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 테이블 행 등장 */
+@keyframes row-appear {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* CPU RUNNING 배지 깜빡임 */
+@keyframes blink-border {
+  0%, 100% { border-color: rgba(34, 197, 94, 0.3); }
+  50%       { border-color: rgba(34, 197, 94, 0.8); }
+}
+
+/* 스캔라인 효과 (간트 차트 현재 시각 커서) */
+@keyframes scan-line {
+  from { left: 0%; }
+  to   { left: 100%; }
+}
+
+/* 흔들림 (오류 입력 시) */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+/* 페이드인 (일반) */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* 스케일 팝 (완료 시 강조) */
+@keyframes scale-pop {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.06); }
+  70%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+/* 진행 바 shimmer */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+/* ── 2. 유틸리티 애니메이션 클래스 ──────────────────────────── */
+
+/* 페이지 진입 시 카드 순차 등장 */
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease both;
+}
+
+/* 오류 입력 흔들림 */
+.animate-shake {
+  animation: shake 0.4s ease;
+}
+
+/* 간트 막대 슬라이드인 */
+.animate-slide-in {
+  animation: slide-in-right 0.35s ease both;
+}
+
+/* 완료 팝 */
+.animate-pop {
+  animation: scale-pop 0.4s ease;
+}
+
+/* 새 프로세스 행 등장 */
+.process-row.new-row {
+  animation: row-appear 0.3s ease both;
+}
+
+/* ── 3. 페이지 초기 로딩 순차 애니메이션 ────────────────────── */
+.app-header {
+  animation: fade-in-down 0.5s ease both;
+}
+
+.row--top      { animation: fade-in-up 0.5s ease 0.05s both; }
+.row--control  { animation: fade-in-up 0.5s ease 0.12s both; }
+.row--gantt    { animation: fade-in-up 0.5s ease 0.19s both; }
+.row--dashboard{ animation: fade-in-up 0.5s ease 0.26s both; }
+
+/* ── 4. 버튼 리플 효과 ──────────────────────────────────────── */
+.btn--run::before,
+.btn--primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center,
+    rgba(255,255,255,0.25) 0%,
+    transparent 60%);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s ease, transform 0.5s ease;
+  pointer-events: none;
+}
+
+.btn--run:active::before,
+.btn--primary:active::before {
+  opacity: 1;
+  transform: scale(2);
+  transition: opacity 0s, transform 0s;
+}
+
+/* ── 5. 게이지 바 shimmer 오버레이 ─────────────────────────── */
+.gauge-bar-fill.active {
+  background-size: 200% auto;
+  animation: shimmer 2s linear infinite;
+  background-image: linear-gradient(
+    90deg,
+    #7c3aed 0%,
+    #2563eb 30%,
+    #06b6d4 60%,
+    #7c3aed 100%
+  );
+}
+
+/* ── 6. CPU RUNNING 상태 헤더 배지 ──────────────────────────── */
+.badge--running {
+  animation: pulse-glow 1.5s ease-in-out infinite,
+             blink-border 1.5s ease-in-out infinite;
+}
+
+/* ── 7. 스케줄링 실행 중 ? 간트 패널 하이라이트 ─────────────── */
+.panel--gantt.running {
+  border-color: rgba(34, 197, 94, 0.3);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.15),
+              0 4px 24px rgba(0, 0, 0, 0.35);
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* ── 8. 완료 대시보드 강조 ──────────────────────────────────── */
+.panel--dashboard.complete {
+  border-color: rgba(124, 58, 237, 0.35);
+  box-shadow: 0 0 0 1px rgba(124, 58, 237, 0.15),
+              0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* ── 9. 선택된 알고리즘 옵션 강조 ──────────────────────────── */
+.select-box:focus {
+  animation: fade-in 0.2s ease;
+}
+
+/* ── 10. 토스트 알림 (선택 구현용) ─────────────────────────── */
+.toast {
+  position: fixed;
+  bottom: var(--space-xl);
+  right: var(--space-xl);
+  padding: var(--space-sm) var(--space-lg);
+  background: rgba(30, 27, 75, 0.95);
+  border: 1px solid rgba(124, 58, 237, 0.4);
+  border-radius: var(--radius-md);
+  color: var(--clr-text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 9999;
+  animation: fade-in-up 0.3s ease both;
+}
+
+.toast.toast--hide {
+  animation: fade-in-up 0.3s ease reverse both;
+}
+
+.toast--success { border-color: rgba(34, 197, 94, 0.5);  color: #4ade80; }
+.toast--error   { border-color: rgba(239, 68, 68, 0.5);  color: #f87171; }
+.toast--info    { border-color: rgba(124, 58, 237, 0.5); color: #a78bfa; }
