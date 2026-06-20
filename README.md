@@ -4,7 +4,7 @@
 
 운영체제 수업에서 배우는 CPU 스케줄링 알고리즘들이 실제로 어떻게 동작하는지
 간트 차트와 애니메이션으로 직접 보면서 비교할 수 있게 만든 웹 앱이다.
-원본 [Oidle](https://github.com/seungmin7676/Oidle) 프로젝트를 React로 다시 구현했다.
+처음엔 바닐라 JavaScript로 만들었고, 이 저장소는 그것을 React로 다시 구현한 버전이다.
 
 라이브 데모: https://seungmin7676.github.io/Oidle
 
