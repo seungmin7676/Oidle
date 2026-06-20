@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Oidle/static/css/main.9b30f6a7.css",
+    "main.js": "/Oidle/static/js/main.4f7756ed.js",
+    "index.html": "/Oidle/index.html",
+    "main.9b30f6a7.css.map": "/Oidle/static/css/main.9b30f6a7.css.map",
+    "main.4f7756ed.js.map": "/Oidle/static/js/main.4f7756ed.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9b30f6a7.css",
+    "static/js/main.4f7756ed.js"
+  ]
+}
